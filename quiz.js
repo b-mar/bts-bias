@@ -216,12 +216,28 @@ function renderQuestion() {
   });
 }
 
+// Prefetch GIFs for top-scoring members in the background
+const prefetched = new Set();
+function prefetchTopGifs() {
+  Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .forEach(([member]) => {
+      if (prefetched.has(member)) return;
+      prefetched.add(member);
+      const img = new Image();
+      img.src = `gifs/${gifMap[member]}`;
+    });
+}
+
 function selectAnswer(btn, answerScores) {
   btn.classList.add('selected');
   scoreHistory.push({ ...scores });
   for (const [member, pts] of Object.entries(answerScores)) {
     scores[member] += pts;
   }
+  // Start prefetching the leading members' GIFs from Q2 onwards
+  if (current >= 1) prefetchTopGifs();
   setTimeout(() => {
     current++;
     if (current < questions.length) {
@@ -256,8 +272,16 @@ function showResult() {
 
   resultGif.classList.remove('loaded');
   resultEmoji.textContent = '';
-  resultGif.onload  = () => resultGif.classList.add('loaded');
-  resultGif.onerror = () => { resultEmoji.textContent = members[winner].emoji; };
+  resultMember.classList.add('loading');
+
+  resultGif.onload = () => {
+    resultMember.classList.remove('loading');
+    resultGif.classList.add('loaded');
+  };
+  resultGif.onerror = () => {
+    resultMember.classList.remove('loading');
+    resultEmoji.textContent = members[winner].emoji;
+  };
   resultGif.src = `gifs/${gifMap[winner]}`;
   resultGif.alt = winner;
 
