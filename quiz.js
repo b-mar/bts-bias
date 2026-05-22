@@ -207,6 +207,7 @@ function renderQuestion() {
   backBtn.hidden = current === 0;
   questionText.textContent = q.text;
   answersEl.innerHTML = '';
+  document.activeElement?.blur();
   selectAnswers(q, current).forEach(a => {
     const btn = document.createElement('button');
     btn.className = 'answer-btn';
