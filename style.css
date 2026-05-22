@@ -81,6 +81,7 @@ body {
   gap: 16px;
   align-items: center;
   flex-shrink: 0;
+  justify-content: space-evenly;
 }
 
 .member-cutout {

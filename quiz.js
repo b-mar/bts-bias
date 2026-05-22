@@ -271,8 +271,7 @@ function resetQuiz() {
   scoreHistory.length = 0;
   Object.keys(scores).forEach(k => (scores[k] = 0));
   progressFill.style.width = '0%';
-  renderQuestion();
-  showScreen(quizScreen);
+  showScreen(startScreen);
 }
 
 startBtn.addEventListener('click', () => {
