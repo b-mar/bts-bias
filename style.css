@@ -64,24 +64,27 @@ body {
 
 /* ── Start screen ── */
 #start-screen {
-  gap: 28px;
+  flex-direction: column;
+  gap: 20px;
   width: 100%;
 }
 
 .start-card {
   flex-shrink: 0;
   width: 100%;
-  max-width: 400px;
+  max-width: 480px;
 }
 
-/* Side image columns */
+/* Top / bottom image rows */
 .start-sides {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row;
+  gap: 20px;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  justify-content: space-evenly;
+  width: 100%;
+  max-width: 700px;
 }
 
 .member-cutout {
@@ -93,20 +96,20 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   display: block;
+  flex-shrink: 0;
 }
 
 /* Staggered rotations for collage feel */
-.start-sides--left  .member-cutout:nth-child(1) { transform: rotate(-4deg) translateY(8px); }
-.start-sides--left  .member-cutout:nth-child(2) { transform: rotate(3deg); }
-.start-sides--left  .member-cutout:nth-child(3) { transform: rotate(-2deg) translateY(-8px); }
-.start-sides--left  .member-cutout:nth-child(4) { transform: rotate(5deg) translateY(4px); }
-.start-sides--right .member-cutout:nth-child(1) { transform: rotate(4deg) translateY(8px); }
-.start-sides--right .member-cutout:nth-child(2) { transform: rotate(-3deg); }
-.start-sides--right .member-cutout:nth-child(3) { transform: rotate(2deg) translateY(-8px); }
-.start-sides--right .member-cutout:nth-child(4) { transform: rotate(-5deg) translateY(4px); }
+.start-sides--top    .member-cutout:nth-child(1) { transform: rotate(-3deg) translateY(6px); }
+.start-sides--top    .member-cutout:nth-child(2) { transform: rotate(2deg) translateY(-4px); }
+.start-sides--top    .member-cutout:nth-child(3) { transform: rotate(-2deg) translateY(4px); }
+.start-sides--top    .member-cutout:nth-child(4) { transform: rotate(3deg) translateY(-6px); }
+.start-sides--bottom .member-cutout:nth-child(1) { transform: rotate(3deg) translateY(-6px); }
+.start-sides--bottom .member-cutout:nth-child(2) { transform: rotate(-2deg) translateY(4px); }
+.start-sides--bottom .member-cutout:nth-child(3) { transform: rotate(2deg) translateY(-4px); }
 
-/* Hide side images on narrow screens */
-@media (max-width: 700px) {
+/* Hide photo strips on very small screens */
+@media (max-width: 480px) {
   .start-sides { display: none; }
   .start-card  { max-width: 560px; }
 }
