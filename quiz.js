@@ -5,7 +5,7 @@ const members = {
   'J-Hope':  { emoji: '☀️', desc: 'Your bias is J-Hope. You want someone who refuses to let you stay in a bad mood, who brings energy into every room and into your life. Being with them would feel like a constant reminder that things are actually pretty good.' },
   Jimin:     { emoji: '🌙', desc: 'Your bias is Jimin. You want someone who shows up for everyone but makes you feel like you\'re their priority — outgoing, warm, the person everyone leans on. He\'ll try to cook for you. It won\'t be good. He will try again.' },
   V:         { emoji: '🎨', desc: 'Your bias is V. You want someone surprising — a little mysterious, deeply sincere, and just different enough to keep you completely intrigued. The kind of person whose love feels like a private world only the two of you share.' },
-  Jungkook:  { emoji: '⚡', desc: 'Your bias is Jungkook. Effortlessly good looking, naturally gifted, and always the first to try something new — then works twice as hard as anyone to perfect it. Except English; his English still sucks, but he makes it cute' },
+  Jungkook:  { emoji: '⚡', desc: 'Your bias is Jungkook. Effortlessly good looking, naturally gifted, and always the first to try something new — then works twice as hard as anyone to perfect it. Except English; his English still sucks, but he makes it cute.' },
 };
 
 // Each question has an answerBank with one answer per member.
@@ -108,12 +108,14 @@ const questions = [
 // State
 let current = 0;
 const scores = Object.fromEntries(Object.keys(members).map(k => [k, 0]));
+const scoreHistory = []; // snapshot before each answer, for back navigation
 
 // Elements
 const startScreen  = document.getElementById('start-screen');
 const quizScreen   = document.getElementById('quiz-screen');
 const resultScreen = document.getElementById('result-screen');
 const startBtn     = document.getElementById('start-btn');
+const backBtn      = document.getElementById('back-btn');
 const retryBtn     = document.getElementById('retry-btn');
 const questionText = document.getElementById('question-text');
 const answersEl    = document.getElementById('answers');
@@ -122,36 +124,87 @@ const progressFill = document.getElementById('progress-fill');
 const resultName   = document.getElementById('result-name');
 const resultDesc   = document.getElementById('result-desc');
 const resultMember = document.getElementById('result-member');
+const resultGif    = document.getElementById('result-gif');
+const resultEmoji  = document.getElementById('result-emoji');
 
 function showScreen(screen) {
   [startScreen, quizScreen, resultScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
 }
 
-// Q1: show all 7. Q2–Q3: show defaultShow (4). Q4+: top 2 scoring members + 2 others.
+const shuffle = arr => arr.slice().sort(() => Math.random() - 0.5);
+
+// Q1: show all 7 (shuffled). Q2–Q3: show defaultShow 4 (shuffled). Q4+: top 2 + 2 others (shuffled).
 function selectAnswers(question, questionIndex) {
   const bank = question.answerBank;
-  if (questionIndex === 0) return bank;
+  if (questionIndex === 0) return shuffle(bank);
   if (questionIndex < 3) {
-    return bank.filter(a => question.defaultShow.includes(a.member));
+    return shuffle(bank.filter(a => question.defaultShow.includes(a.member)));
   }
   const ranked = Object.entries(scores)
     .sort((a, b) => b[1] - a[1])
     .map(([member]) => member);
   const top2 = ranked.slice(0, 2);
   const rest  = ranked.slice(2);
-  const top2Answers  = bank.filter(a => top2.includes(a.member));
-  const restAnswers  = bank
-    .filter(a => rest.includes(a.member))
-    .sort(() => Math.random() - 0.5)
+  const top2Answers = bank.filter(a => top2.includes(a.member));
+  const restAnswers = shuffle(bank.filter(a => rest.includes(a.member)))
     .slice(0, 4 - top2Answers.length);
-  return [...top2Answers, ...restAnswers].sort(() => Math.random() - 0.5);
+  return shuffle([...top2Answers, ...restAnswers]);
 }
+
+// Floating background member faces
+function initBackground() {
+  const files = [
+    'rm-rs.png', 'jin-rs.png', 'suga-rs.png',
+    'jhope-rs.png', 'jimin-rs.png', 'v-rs.png', 'jk-rs.png',
+  ];
+  const container = document.getElementById('bg-floats');
+
+  // Build a 4-col × 6-row grid (24 slots), pick 21
+  const cols = 4, rows = 6;
+  const allSlots = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) allSlots.push({ c, r });
+  }
+  const slots = shuffle(allSlots).slice(0, files.length * 3); // 21 slots
+
+  // Assign members in 3 separate shuffled rounds so each appears exactly 3 times
+  // and no round clusters the same member together spatially
+  const pool = [
+    ...shuffle([...files]),  // round 1 — one of each member
+    ...shuffle([...files]),  // round 2
+    ...shuffle([...files]),  // round 3
+  ];
+
+  slots.forEach((slot, i) => {
+    const img = document.createElement('img');
+    img.src       = `images/${pool[i]}`;
+    img.alt       = '';
+    img.className = 'bg-float';
+    img.onerror   = () => img.remove();
+
+    const cellW = 100 / cols;
+    const cellH = 100 / rows;
+    const left  = slot.c * cellW + cellW * 0.15 + Math.random() * cellW * 0.55;
+    const top   = slot.r * cellH + cellH * 0.1  + Math.random() * cellH * 0.65;
+
+    img.style.left              = `${left}%`;
+    img.style.top               = `${top}%`;
+    img.style.width             = `${80 + Math.random() * 50}px`;
+    img.style.opacity           = `${0.25 + Math.random() * 0.15}`;
+    img.style.animationDuration = `${10 + Math.random() * 8}s`;
+    img.style.animationDelay    = `-${Math.random() * 12}s`;
+    container.appendChild(img);
+  });
+}
+
+initBackground();
 
 function renderQuestion() {
   const q = questions[current];
   counter.textContent = `Question ${current + 1} of ${questions.length}`;
   progressFill.style.width = `${(current / questions.length) * 100}%`;
+  backBtn.hidden = current === 0;
   questionText.textContent = q.text;
   answersEl.innerHTML = '';
   selectAnswers(q, current).forEach(a => {
@@ -165,6 +218,7 @@ function renderQuestion() {
 
 function selectAnswer(btn, answerScores) {
   btn.classList.add('selected');
+  scoreHistory.push({ ...scores });
   for (const [member, pts] of Object.entries(answerScores)) {
     scores[member] += pts;
   }
@@ -178,10 +232,35 @@ function selectAnswer(btn, answerScores) {
   }, 280);
 }
 
+function goBack() {
+  if (current === 0) return;
+  current--;
+  const prev = scoreHistory.pop();
+  Object.keys(scores).forEach(k => (scores[k] = prev[k]));
+  renderQuestion();
+}
+
+const gifMap = {
+  RM: 'rm-mov.gif',
+  Jin: 'jin-mov.gif',
+  Suga: 'suga-mov.gif',
+  'J-Hope': 'jhope-mov.gif',
+  Jimin: 'jimin-mov.gif',
+  V: 'v-mov.gif',
+  Jungkook: 'jk-mov.gif',
+};
+
 function showResult() {
   progressFill.style.width = '100%';
   const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
-  resultMember.textContent = members[winner].emoji;
+
+  resultGif.classList.remove('loaded');
+  resultEmoji.textContent = '';
+  resultGif.onload  = () => resultGif.classList.add('loaded');
+  resultGif.onerror = () => { resultEmoji.textContent = members[winner].emoji; };
+  resultGif.src = `gifs/${gifMap[winner]}`;
+  resultGif.alt = winner;
+
   resultName.textContent = winner;
   resultDesc.textContent = members[winner].desc;
   showScreen(resultScreen);
@@ -189,6 +268,7 @@ function showResult() {
 
 function resetQuiz() {
   current = 0;
+  scoreHistory.length = 0;
   Object.keys(scores).forEach(k => (scores[k] = 0));
   progressFill.style.width = '0%';
   renderQuestion();
@@ -200,4 +280,5 @@ startBtn.addEventListener('click', () => {
   showScreen(quizScreen);
 });
 
+backBtn.addEventListener('click', goBack);
 retryBtn.addEventListener('click', resetQuiz);
