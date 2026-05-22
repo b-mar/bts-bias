@@ -263,14 +263,14 @@ h1 {
   position: relative;
 }
 
-.member-avatar img {
+.member-avatar video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: none;
 }
 
-.member-avatar img.loaded {
+.member-avatar video.loaded {
   display: block;
 }
 

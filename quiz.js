@@ -124,7 +124,7 @@ const progressFill = document.getElementById('progress-fill');
 const resultName   = document.getElementById('result-name');
 const resultDesc   = document.getElementById('result-desc');
 const resultMember = document.getElementById('result-member');
-const resultGif    = document.getElementById('result-gif');
+const resultVideo  = document.getElementById('result-video');
 const resultEmoji  = document.getElementById('result-emoji');
 
 function showScreen(screen) {
@@ -216,17 +216,18 @@ function renderQuestion() {
   });
 }
 
-// Prefetch GIFs for top-scoring members in the background
+// Prefetch videos for top-scoring members in the background
 const prefetched = new Set();
-function prefetchTopGifs() {
+function prefetchTopVideos() {
   Object.entries(scores)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
     .forEach(([member]) => {
       if (prefetched.has(member)) return;
       prefetched.add(member);
-      const img = new Image();
-      img.src = `gifs/${gifMap[member]}`;
+      const v = document.createElement('video');
+      v.preload = 'auto';
+      v.src = `mov/${movMap[member]}`;
     });
 }
 
@@ -236,8 +237,8 @@ function selectAnswer(btn, answerScores) {
   for (const [member, pts] of Object.entries(answerScores)) {
     scores[member] += pts;
   }
-  // Start prefetching the leading members' GIFs from Q2 onwards
-  if (current >= 1) prefetchTopGifs();
+  // Start prefetching the leading members' videos from Q2 onwards
+  if (current >= 1) prefetchTopVideos();
   setTimeout(() => {
     current++;
     if (current < questions.length) {
@@ -256,34 +257,35 @@ function goBack() {
   renderQuestion();
 }
 
-const gifMap = {
-  RM: 'rm-mov.gif',
-  Jin: 'jin-mov.gif',
-  Suga: 'suga-mov.gif',
-  'J-Hope': 'jhope-mov.gif',
-  Jimin: 'jimin-mov.gif',
-  V: 'v-mov.gif',
-  Jungkook: 'jk-mov.gif',
+const movMap = {
+  RM:       'rm-mov.mov',
+  Jin:      'jin-mov.mov',
+  Suga:     'suga-mov.mov',
+  'J-Hope': 'jhope-mov.mov',
+  Jimin:    'jimin-mov.mov',
+  V:        'v-mov.mov',
+  Jungkook: 'jk-mov.mov',
 };
 
 function showResult() {
   progressFill.style.width = '100%';
   const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
 
-  resultGif.classList.remove('loaded');
+  resultVideo.classList.remove('loaded');
   resultEmoji.textContent = '';
   resultMember.classList.add('loading');
 
-  resultGif.onload = () => {
+  resultVideo.oncanplay = () => {
     resultMember.classList.remove('loading');
-    resultGif.classList.add('loaded');
+    resultVideo.classList.add('loaded');
+    resultVideo.play();
   };
-  resultGif.onerror = () => {
+  resultVideo.onerror = () => {
     resultMember.classList.remove('loading');
     resultEmoji.textContent = members[winner].emoji;
   };
-  resultGif.src = `gifs/${gifMap[winner]}`;
-  resultGif.alt = winner;
+  resultVideo.src = `mov/${movMap[winner]}`;
+  resultVideo.load();
 
   resultName.textContent = winner;
   resultDesc.textContent = members[winner].desc;
