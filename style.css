@@ -227,6 +227,8 @@ h1 {
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
   text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .answer-btn:hover {

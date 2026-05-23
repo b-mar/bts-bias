@@ -207,7 +207,6 @@ function renderQuestion() {
   backBtn.hidden = current === 0;
   questionText.textContent = q.text;
   answersEl.innerHTML = '';
-  document.activeElement?.blur();
   selectAnswers(q, current).forEach(a => {
     const btn = document.createElement('button');
     btn.className = 'answer-btn';
@@ -215,6 +214,8 @@ function renderQuestion() {
     btn.addEventListener('click', () => selectAnswer(btn, a.scores));
     answersEl.appendChild(btn);
   });
+  // Blur after buttons exist so mobile browsers don't re-focus a newly rendered button
+  requestAnimationFrame(() => { document.activeElement?.blur(); });
 }
 
 // Prefetch videos for top-scoring members in the background
@@ -233,6 +234,8 @@ function prefetchTopVideos() {
 }
 
 function selectAnswer(btn, answerScores) {
+  // Disable all buttons immediately to prevent double-tap on mobile
+  answersEl.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
   btn.classList.add('selected');
   scoreHistory.push({ ...scores });
   for (const [member, pts] of Object.entries(answerScores)) {
