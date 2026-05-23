@@ -231,10 +231,12 @@ h1 {
   user-select: none;
 }
 
-.answer-btn:hover {
-  background: rgba(196, 30, 58, 0.2);
-  border-color: var(--primary-light);
-  transform: translateX(4px);
+@media (hover: hover) {
+  .answer-btn:hover {
+    background: rgba(196, 30, 58, 0.2);
+    border-color: var(--primary-light);
+    transform: translateX(4px);
+  }
 }
 
 .answer-btn:focus { outline: none; }
