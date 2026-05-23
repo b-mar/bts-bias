@@ -3,7 +3,7 @@ const members = {
   Jin:       { emoji: '🌸', desc: 'Your bias is Jin. Notoriously good looking and completely aware of it. You want someone who fusses over whether you\'ve eaten and whose terrible dad jokes land every single time — somehow.' },
   Suga:      { emoji: '🎵', desc: 'Your bias is Suga. You don\'t need grand gestures — you want someone who loves quietly and deeply, who shows up without making a production of it. The kind of person who sends you a song instead of saying "I miss you."' },
   'J-Hope':  { emoji: '☀️', desc: 'Your bias is J-Hope. You want someone who refuses to let you stay in a bad mood, who brings energy into every room and into your life. Being with them would feel like a constant reminder that things are actually pretty good.' },
-  Jimin:     { emoji: '🌙', desc: 'Your bias is Jimin. You want someone who is warm, outgoing, the person the whole room gravitates to. One day, he\'ll show up looking like a lil soup dumpling, and Shakira the next.' },
+  Jimin:     { emoji: '🌙', desc: 'Your bias is Jimin. You want someone who is warm, outgoing, the person the whole room gravitates to. He\'ll show up looking like a lil XLB one day and Shakira the next.' },
   V:         { emoji: '🎨', desc: 'Your bias is V. You want someone surprising — a little mysterious, deeply sincere, and just different enough to keep you completely intrigued. The kind of person whose love feels like a private world only the two of you share.' },
   Jungkook:  { emoji: '⚡', desc: 'Your bias is Jungkook. Effortlessly good looking, naturally gifted, and always the first to try something new — then works twice as hard as anyone to perfect it. Except English; his English still sucks, but he makes it cute.' },
 };
